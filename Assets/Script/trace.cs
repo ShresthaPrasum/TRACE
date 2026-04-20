@@ -293,24 +293,18 @@ public class trace : MonoBehaviour
             return false;
         }
 
-        RecordSnapshot(force: true);
-        List<AfterImageReplay.ReplayFrame> replayFrames = BuildReplayFrames();
-        if (replayFrames.Count < 2)
-        {
-            return false;
-        }
-
         GameObject clone = new GameObject("AfterImageReplay");
         AfterImageReplay replay = clone.AddComponent<AfterImageReplay>();
         replay.Initialize(
             sourceRenderer,
-            replayFrames,
             afterImageTint,
+            replaySeconds,
+            this.transform,
+            _history,
             afterImageHoldSeconds,
             afterImageFadeOutSeconds,
             _health.CurrentHealth,
             GetComponentsInChildren<Collider2D>());
-
         _afterImagesRemaining -= 1;
         return true;
     }

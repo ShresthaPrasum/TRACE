@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class AfterImageReplay : MonoBehaviour
 {
+    private List<ReplayFrame> _playerHistory;
+    [SerializeField, Min(0f)] private float followDelay = 0.3f; 
     public struct ReplayFrame
     {
         public float time;
@@ -12,7 +14,6 @@ public class AfterImageReplay : MonoBehaviour
     }
 
     private static readonly List<AfterImageReplay> ActiveList = new();
-
     private readonly List<ReplayFrame> _frames = new();
     private SpriteRenderer _renderer;
     private HealthEntity _health;
@@ -24,6 +25,10 @@ public class AfterImageReplay : MonoBehaviour
     private int _segmentIndex;
     private Color _startColor;
     private bool _isInitialized;
+    private Transform _followTarget;
+    private float _followDuration;
+    private float _followTimer;
+    private bool _isFollowingLive;
 
     public HealthEntity Health => _health;
     public bool IsAlive => _health != null && _health.IsAlive;
@@ -43,7 +48,7 @@ public class AfterImageReplay : MonoBehaviour
         AfterImageReplay nearest = null;
         float bestDistance = float.MaxValue;
 
-        // Clean up null or dead entries
+        
         for (int i = ActiveList.Count - 1; i >= 0; i--)
         {
             var candidate = ActiveList[i];
@@ -74,31 +79,35 @@ public class AfterImageReplay : MonoBehaviour
 
     public void Initialize(
         SpriteRenderer sourceRenderer,
-        List<ReplayFrame> replayFrames,
         Color tint,
+        float followDuration,
+        Transform followTarget,
+        List<ReplayFrame> playerHistory,
         float holdSeconds,
         float fadeOutSeconds,
         float startingHealth,
         Collider2D[] playerColliders)
     {
-        if (sourceRenderer == null || sourceRenderer.sprite == null || replayFrames == null || replayFrames.Count < 2)
+        if (sourceRenderer == null || sourceRenderer.sprite == null || followTarget == null)
         {
             Destroy(gameObject);
             return;
         }
 
-        _frames.Clear();
-        _frames.AddRange(replayFrames);
-        _duration = _frames[_frames.Count - 1].time;
+        _followTarget = followTarget;
+        _followDuration = followDuration;
+        _followTimer = 0f;
+        _isFollowingLive = true;
+        _playerHistory = playerHistory;
         _holdSeconds = Mathf.Max(0f, holdSeconds);
         _fadeOutSeconds = Mathf.Max(0.01f, fadeOutSeconds);
 
         _rigidbody2D = gameObject.AddComponent<Rigidbody2D>();
-        _rigidbody2D.bodyType = RigidbodyType2D.Kinematic;
-        _rigidbody2D.gravityScale = 0f;
+        _rigidbody2D.bodyType = RigidbodyType2D.Dynamic;
+        _rigidbody2D.gravityScale = 1f;  
+        _rigidbody2D.mass = 1f;  
         _rigidbody2D.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         _rigidbody2D.interpolation = RigidbodyInterpolation2D.Interpolate;
-        _rigidbody2D.useFullKinematicContacts = true;
         _rigidbody2D.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         BuildBlockingColliders(sourceRenderer, playerColliders);
@@ -121,9 +130,9 @@ public class AfterImageReplay : MonoBehaviour
             sourceColor.a * tint.a);
         _renderer.color = _startColor;
 
-        transform.position = _frames[0].position;
-        transform.rotation = _frames[0].rotation;
-        _renderer.flipX = _frames[0].flipX;
+        transform.position = followTarget.position;
+        transform.rotation = followTarget.rotation;
+        _renderer.flipX = sourceRenderer.flipX;
 
         _health = gameObject.AddComponent<HealthEntity>();
         _health.SetMaxAndCurrent(startingHealth, startingHealth);
@@ -131,6 +140,7 @@ public class AfterImageReplay : MonoBehaviour
         _isInitialized = true;
     }
 
+    [System.Obsolete]
     private void Update()
     {
         if (!_isInitialized)
@@ -144,43 +154,36 @@ public class AfterImageReplay : MonoBehaviour
             return;
         }
 
-        _elapsed += Time.deltaTime;
-
-        if (_elapsed <= _duration)
+        if (_isFollowingLive)
         {
-            ApplyReplayPose(_elapsed);
-            return;
-        }
-
-        if (_elapsed <= _duration + _holdSeconds)
-        {
-            ReplayFrame lastFrame = _frames[_frames.Count - 1];
-
-            if (_rigidbody2D != null)
+            _followTimer += Time.deltaTime;
+            if (_followTimer <= _followDuration)
             {
-                _rigidbody2D.MovePosition(lastFrame.position);
-                _rigidbody2D.MoveRotation(lastFrame.rotation.eulerAngles.z);
+                if (_playerHistory != null && _playerHistory.Count > 0)
+                {
+                    float delayedTime = Time.time - followDelay;
+                    
+                    ReplayFrame prev = _playerHistory[0];
+                    ReplayFrame next = _playerHistory[_playerHistory.Count - 1];
+                    for (int i = 1; i < _playerHistory.Count; i++)
+                    {
+                        if (_playerHistory[i].time >= delayedTime)
+                        {
+                            prev = _playerHistory[i - 1];
+                            next = _playerHistory[i];
+                            break;
+                        }
+                    }
+                    float t = (next.time - prev.time) > 0.0001f ? Mathf.InverseLerp(prev.time, next.time, delayedTime) : 0f;
+                    transform.position = Vector3.Lerp(prev.position, next.position, t);
+                    transform.rotation = Quaternion.Slerp(prev.rotation, next.rotation, t);
+                    _renderer.flipX = t < 0.5f ? prev.flipX : next.flipX;
+                }
+                return;
             }
-            else
-            {
-                transform.position = lastFrame.position;
-                transform.rotation = lastFrame.rotation;
-            }
-
-            _renderer.flipX = lastFrame.flipX;
-            return;
+            
         }
-
-        float fadeStart = _duration + _holdSeconds;
-        float fadeProgress = Mathf.Clamp01((_elapsed - fadeStart) / _fadeOutSeconds);
-        Color faded = _startColor;
-        faded.a = Mathf.Lerp(_startColor.a, 0f, fadeProgress);
-        _renderer.color = faded;
-
-        if (fadeProgress >= 1f)
-        {
-            Destroy(gameObject);
-        }
+        
     }
 
     private void ApplyReplayPose(float replayTime)
