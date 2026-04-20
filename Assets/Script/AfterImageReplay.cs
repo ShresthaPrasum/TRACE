@@ -121,6 +121,7 @@ public class AfterImageReplay : MonoBehaviour
         _renderer.drawMode = sourceRenderer.drawMode;
         _renderer.size = sourceRenderer.size;
         _renderer.maskInteraction = sourceRenderer.maskInteraction;
+        _renderer.tag = "Player";
 
         Color sourceColor = sourceRenderer.color;
         _startColor = new Color(

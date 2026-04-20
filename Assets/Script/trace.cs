@@ -5,6 +5,11 @@ using UnityEngine.InputSystem;
 
 public class trace : MonoBehaviour
 {
+    private bool isRunning;
+
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+
     [Header("Movement")]
     [SerializeField] private float walkSpeed = 4f;
 
@@ -117,6 +122,20 @@ public class trace : MonoBehaviour
 
     private void HandleMovement(float horizontalInput, bool jumpPressed)
     {
+        // Set Animator Speed parameter: 1 (right), 0 (idle), -1 (left)
+        if (animator != null)
+        {
+            int speedValue = 0;
+            if (horizontalInput > 0.01f)
+                speedValue = 1;
+            else if (horizontalInput < -0.01f)
+                speedValue = -1;
+            animator.SetFloat("Speed", speedValue);
+        }
+        isRunning = Mathf.Abs(horizontalInput) > 0.01f;
+        animator.SetBool("isRunning", isRunning);
+
+        
         if (Mathf.Abs(horizontalInput) > 0.0001f)
         {
             _lastNonZeroMoveInput = new Vector2(Mathf.Sign(horizontalInput), 0f);
