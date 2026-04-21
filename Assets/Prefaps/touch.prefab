@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 9123434873392690179}
   - component: {fileID: 7047721476689589644}
   - component: {fileID: 3198111010548796390}
-  - component: {fileID: 366898788066667707}
   m_Layer: 0
   m_Name: touch
   m_TagString: Untagged
@@ -159,24 +158,6 @@ MonoBehaviour:
   transitionSpeed: 5
   activeColor: {r: 0, g: 1, b: 0.20552826, a: 1}
   resetColor: {r: 1, g: 0, b: 0.026037216, a: 1}
---- !u!114 &366898788066667707
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 400108896520121867}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22805e17d49411b47a3be9e1dca3c6eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HoldToChange
-  targetObject: {fileID: 6392379223105466883}
-  behavior: 1
-  movementOffset: {x: 0, y: 0, z: 0}
-  transitionSpeed: 5
-  activeColor: {r: 0, g: 1, b: 0.19361067, a: 1}
-  resetColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &6392379223105466883
 GameObject:
   m_ObjectHideFlags: 0

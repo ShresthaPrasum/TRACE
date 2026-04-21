@@ -306,6 +306,7 @@ public class ObjectMotionController : MonoBehaviour
     private void OnValidate()
     {
         moveDuration = Mathf.Max(0f, moveDuration);
+        
         rotateDuration = Mathf.Max(0f, rotateDuration);
     }
 }

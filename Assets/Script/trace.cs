@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections;
-using System.Collections.Generic; // <-- THIS IS THE MISSING LINE
+using System.Collections.Generic; 
 using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
@@ -194,7 +194,7 @@ public class trace : MonoBehaviour
         Vector2 move = new Vector2(_velocity.x, _verticalVelocity);
         Vector2 nextPosition = _rigidbody2D.position + move * Time.fixedDeltaTime;
         _rigidbody2D.MovePosition(nextPosition);
-
+ 
         UpdateGroundedState();
     }
 
@@ -309,8 +309,9 @@ public class trace : MonoBehaviour
         });
 
         float cutoffTime = Time.time - replaySeconds - 0.5f;
+
         
-        // Fixed this bracket structure
+        
         while (_history.Count > 0 && _history[0].time < cutoffTime)
         {
             _history.RemoveAt(0);
