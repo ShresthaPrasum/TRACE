@@ -2,15 +2,12 @@ using UnityEngine;
 
 public class HoldToChange : MonoBehaviour
 {
-    
     public enum TriggerBehavior { Move, Activate, Deactivate }
 
     [Header("Behavior Settings")]
     [SerializeField] private GameObject targetObject;
     [SerializeField] private TriggerBehavior behavior = TriggerBehavior.Move;
-
-    [Header("Movement Settings (For 'Move' Mode)")]
-    [SerializeField] private Vector3 activeCoordinates;
+    [SerializeField] private Vector3 movementOffset; 
     [SerializeField] private float transitionSpeed = 5f;
 
     [Header("Visual Settings")]
@@ -18,9 +15,9 @@ public class HoldToChange : MonoBehaviour
     [SerializeField] private Color resetColor = Color.red;
 
     private Vector3 originalPosition;
-    private SpriteRenderer targetRenderer;
-    private int objectsOnPlate = 0;
+    private Vector3 activePosition; 
     private SpriteRenderer switchRenderer;
+    private int objectsOnPlate = 0;
 
     void Start()
     {
@@ -29,9 +26,10 @@ public class HoldToChange : MonoBehaviour
         if (targetObject != null)
         {
             originalPosition = targetObject.transform.localPosition;
-            targetRenderer = targetObject.GetComponent<SpriteRenderer>();
-
             
+            
+            activePosition = originalPosition + movementOffset;
+
             if (behavior == TriggerBehavior.Activate)
             {
                 targetObject.SetActive(false);
@@ -62,7 +60,7 @@ public class HoldToChange : MonoBehaviour
             case TriggerBehavior.Move:
                 targetObject.transform.localPosition = Vector3.Lerp(
                     targetObject.transform.localPosition, 
-                    activeCoordinates, 
+                    activePosition, 
                     Time.deltaTime * transitionSpeed
                 );
                 break;
@@ -76,7 +74,7 @@ public class HoldToChange : MonoBehaviour
                 break;
         }
 
-       switchRenderer.color = activeColor;
+        if (switchRenderer != null) switchRenderer.color = activeColor;
     }
 
     private void ApplyResetState()
@@ -100,12 +98,13 @@ public class HoldToChange : MonoBehaviour
                 break;
         }
 
-        switchRenderer.color = resetColor;
+        if (switchRenderer != null) switchRenderer.color = resetColor;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        
+        if (other.CompareTag("Player") || other.CompareTag("Decoy"))
         {
             objectsOnPlate++;
         }
@@ -113,7 +112,7 @@ public class HoldToChange : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") || other.CompareTag("Decoy"))
         {
             objectsOnPlate--;
         }
