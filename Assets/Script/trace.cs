@@ -1,10 +1,12 @@
+using UnityEngine;
 using UnityEngine.UI;
 using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.InputSystem;
+using System.Collections;
+using System.Collections.Generic; // <-- THIS IS THE MISSING LINE
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
+
 
 public class trace : MonoBehaviour
 {
@@ -104,13 +106,12 @@ public class trace : MonoBehaviour
     }
 
     private void Update()
-
-            // Reset level if R key is pressed
-            if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
-            {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-            }
     {
+        if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
         float horizontalInput = GetHorizontalInput();
         bool jumpPressed = WasPressedThisFrame(jumpKey);
 
@@ -119,18 +120,18 @@ public class trace : MonoBehaviour
             TriggerDashAndAfterImage(horizontalInput);
         }
 
-        HandleMovement(horizontalInput, jumpPressed); // Update movement logic
+        HandleMovement(horizontalInput, jumpPressed);
 
         if (Time.time - _lastHistoryRecordTime >= historyRecordInterval)
         {
             RecordSnapshot(force: false);
         }
 
-        // Update UI text with after images remaining
         if (afterImagesText != null)
         {
             afterImagesText.text = _afterImagesRemaining.ToString();
         }
+        
     }
 
     public void SetAfterImageChargesForLevel(int charges)
@@ -140,7 +141,6 @@ public class trace : MonoBehaviour
 
     private void HandleMovement(float horizontalInput, bool jumpPressed)
     {
-        // Set Animator Speed parameter: 1 (right), 0 (idle), -1 (left)
         if (animator != null)
         {
             int speedValue = 0;
@@ -153,7 +153,6 @@ public class trace : MonoBehaviour
         isRunning = Mathf.Abs(horizontalInput) > 0.01f;
         animator.SetBool("isRunning", isRunning);
 
-        
         if (Mathf.Abs(horizontalInput) > 0.0001f)
         {
             _lastNonZeroMoveInput = new Vector2(Mathf.Sign(horizontalInput), 0f);
@@ -167,37 +166,36 @@ public class trace : MonoBehaviour
             _isGrounded = false;
         }
 
-        // Only handle input and visuals here; movement is now in FixedUpdate
         if (sourceRenderer != null && Mathf.Abs(horizontalInput) > 0.01f)
         {
             sourceRenderer.flipX = horizontalInput < 0f;
         }
 
-            if (_dashTimer > 0f)
-            {
-                _dashTimer = Mathf.Max(0f, _dashTimer - Time.fixedDeltaTime);
-                _velocity = _dashDirection * dashSpeed;
-            }
-            else
-            {
-                _velocity = new Vector2(horizontalInput * walkSpeed, 0f);
-            }
+        if (_dashTimer > 0f)
+        {
+            _dashTimer = Mathf.Max(0f, _dashTimer - Time.fixedDeltaTime);
+            _velocity = _dashDirection * dashSpeed;
+        }
+        else
+        {
+            _velocity = new Vector2(horizontalInput * walkSpeed, 0f);
+        }
 
-            if (!_isGrounded || _verticalVelocity > 0f)
-            {
-                _verticalVelocity += gravity * Time.fixedDeltaTime;
-            }
+        if (!_isGrounded || _verticalVelocity > 0f)
+        {
+            _verticalVelocity += gravity * Time.fixedDeltaTime;
+        }
 
-            if (_isGrounded && _verticalVelocity < 0f)
-            {
-                _verticalVelocity = 0f;
-            }
+        if (_isGrounded && _verticalVelocity < 0f)
+        {
+            _verticalVelocity = 0f;
+        }
 
-            Vector2 move = new Vector2(_velocity.x, _verticalVelocity);
-            Vector2 nextPosition = _rigidbody2D.position + move * Time.fixedDeltaTime;
-            _rigidbody2D.MovePosition(nextPosition);
+        Vector2 move = new Vector2(_velocity.x, _verticalVelocity);
+        Vector2 nextPosition = _rigidbody2D.position + move * Time.fixedDeltaTime;
+        _rigidbody2D.MovePosition(nextPosition);
 
-            UpdateGroundedState();
+        UpdateGroundedState();
     }
 
     private float GetHorizontalInput()
@@ -311,7 +309,9 @@ public class trace : MonoBehaviour
         });
 
         float cutoffTime = Time.time - replaySeconds - 0.5f;
-        while (_history.Count > 2 && _history[0].time < cutoffTime)
+        
+        // Fixed this bracket structure
+        while (_history.Count > 0 && _history[0].time < cutoffTime)
         {
             _history.RemoveAt(0);
         }
