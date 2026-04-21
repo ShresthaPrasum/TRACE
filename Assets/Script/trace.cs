@@ -1,10 +1,16 @@
+using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class trace : MonoBehaviour
 {
+    [Header("UI")]
+    [SerializeField] private TMP_Text afterImagesText;
+
     private bool isRunning;
 
     [Header("Animation")]
@@ -98,6 +104,12 @@ public class trace : MonoBehaviour
     }
 
     private void Update()
+
+            // Reset level if R key is pressed
+            if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
     {
         float horizontalInput = GetHorizontalInput();
         bool jumpPressed = WasPressedThisFrame(jumpKey);
@@ -112,6 +124,12 @@ public class trace : MonoBehaviour
         if (Time.time - _lastHistoryRecordTime >= historyRecordInterval)
         {
             RecordSnapshot(force: false);
+        }
+
+        // Update UI text with after images remaining
+        if (afterImagesText != null)
+        {
+            afterImagesText.text = _afterImagesRemaining.ToString();
         }
     }
 
