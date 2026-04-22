@@ -339,7 +339,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7733108832696844b8e196d1a8c8f7a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelLoader
-  nextSceneName: Level7
+  nextSceneName: Level8
   playerTag: Player
   allowParentTagCheck: 1
   useTrigger: 1

@@ -1828,9 +1828,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::trace
   afterImagesText: {fileID: 523424747}
   animator: {fileID: 873381242}
-  walkSpeed: 8
+  walkSpeed: 12
   jumpSpeed: 14
-  gravity: -24
+  gravity: -34
   groundCheckDistance: 0.1
   groundLayers:
     serializedVersion: 2
@@ -2577,7 +2577,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PhysicsTrigger
   targetObject: {fileID: 75946468}
   behavior: 1
-  activeCoordinates: {x: 2, y: 0, z: 0}
+  movementOffset: {x: 0, y: 0, z: 0}
   transitionSpeed: 5
   activeColor: {r: 0, g: 1, b: 0.20552826, a: 1}
   resetColor: {r: 1, g: 0, b: 0.026037216, a: 1}
@@ -2595,7 +2595,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HoldToChange
   targetObject: {fileID: 530681918}
   behavior: 1
-  activeCoordinates: {x: 0, y: 0, z: 0}
+  movementOffset: {x: 0, y: 0, z: 0}
   transitionSpeed: 5
   activeColor: {r: 0, g: 1, b: 0.19361067, a: 1}
   resetColor: {r: 1, g: 0, b: 0, a: 1}
