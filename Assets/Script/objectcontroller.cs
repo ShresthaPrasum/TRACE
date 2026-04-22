@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// I am used to this code
 public class ObjectMotionController : MonoBehaviour
 {
     public enum MotionMode

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// This script is used in every game I have ever made
 public class LevelLoader : MonoBehaviour
 {
     [SerializeField] private string nextSceneName = "Level2";

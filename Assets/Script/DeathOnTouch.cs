@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// This script is also so repeated
+
 public class DeathOnTouch : MonoBehaviour
 {
 

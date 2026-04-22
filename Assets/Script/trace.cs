@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 
+// So many usings....
 
 public class trace : MonoBehaviour
 {
@@ -331,6 +332,8 @@ public class trace : MonoBehaviour
             return false;
         }
 
+        // What the hellllll
+
         GameObject clone = new GameObject("AfterImageReplay");
         AfterImageReplay replay = clone.AddComponent<AfterImageReplay>();
         replay.Initialize(
@@ -347,6 +350,7 @@ public class trace : MonoBehaviour
         return true;
     }
 
+    // YEAH WHAT IN THE HELL WORRLD IS THIS FUNCTION
     private List<AfterImageReplay.ReplayFrame> BuildReplayFrames()
     {
         List<AfterImageReplay.ReplayFrame> result = new();

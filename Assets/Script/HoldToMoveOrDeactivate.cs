@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// New Script let's goooooo
 public class HoldToChange : MonoBehaviour
 {
     public enum TriggerBehavior { Move, Activate, Deactivate }
