@@ -134,6 +134,7 @@ public class ObjectMoveOnTrigger : MonoBehaviour
 	private void OnTriggerEnter(Collider other)
 	{
 		HandleTouch(other.gameObject);
+		
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)
