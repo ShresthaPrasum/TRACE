@@ -11,6 +11,9 @@ using UnityEngine.InputSystem;
 
 public class trace : MonoBehaviour
 {
+    [Header("Audio")]
+    [SerializeField] private AudioClip afterImageSound;
+    private AudioSource audioSource;
     [Header("UI")]
     [SerializeField] private TMP_Text afterImagesText;
 
@@ -69,7 +72,13 @@ public class trace : MonoBehaviour
     }
 
     private void Awake()
-    {
+{
+            // Setup AudioSource
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+            }
         SanitizeInputBindings();
 
         _rigidbody2D = GetComponent<Rigidbody2D>();
@@ -104,10 +113,16 @@ public class trace : MonoBehaviour
 
         _afterImagesRemaining = Mathf.Max(1, maxAfterImagesPerLevel);
         RecordSnapshot(force: true);
-    }
+}
 
     private void Update()
     {
+         if (Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            SceneManager.LoadScene("Home");
+            return;
+        }
+
         if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -118,6 +133,10 @@ public class trace : MonoBehaviour
 
         if (WasPressedThisFrame(activateAfterImageKey))
         {
+            if (afterImageSound != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(afterImageSound);
+            }
             TriggerDashAndAfterImage(horizontalInput);
         }
 
